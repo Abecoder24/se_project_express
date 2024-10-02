@@ -27,21 +27,6 @@ const getItems = (req, res) => {
         })
 }
 
-const updateItem = (req, res) => {
-    let { itemId } = req.params;
-    let { imageURL } = req.body;
-
-    ClothingItem.findByIdAndUpdate(itemId, { $set: { imageURL } })
-        .orFail()
-        .then(item => res.send({ data: item }))
-        .catch(err => {
-            if (err.name === "ValidationError") {
-                return res.status(Error_Bad_Request).send({ message: err.message })
-            }
-            return res.status(Error_Internal_Server).send({ message: 'Invalid data' });
-        })
-}
-
 const deleteItem = (req, res) => {
     let { itemId } = req.params;
 
