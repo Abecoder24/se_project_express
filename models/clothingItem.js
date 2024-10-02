@@ -7,7 +7,7 @@ const clothingItemSchema = new mongoose.Schema({
         minlength: 2,
         maxlength: 30
     },
-    imageURL: {
+    imageUrl: {
         type: String,
         required: [true, "Image feild is Required"],
         vlidate: {
@@ -21,7 +21,20 @@ const clothingItemSchema = new mongoose.Schema({
         type: String,
         required: [true, "Weather feild is Required"],
         enm: ["hot", "warm", "cold"]
-    }
+    },
+    owner:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "user",
+        required: [true, "Owner feild is required"]
+    },
+    likes:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "user"
+    }],
+    createdAt:{
+        type: Date,
+        default: Date.now
+    }    
 })
 
 module.exports = mongoose.model("clothingItem", clothingItemSchema);
