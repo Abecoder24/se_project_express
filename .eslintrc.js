@@ -1,5 +1,3 @@
-const _id = 22;
-
 module.exports = {
     env: {
         es2021: true,

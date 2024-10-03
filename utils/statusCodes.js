@@ -1,9 +1,9 @@
-const Status_Ok = 200;
-const Status_Created = 201;
-const Status_NoContent = 204;
+const statusOk = 200;
+const statusCreated = 201;
+const statusNoContent = 204;
 
-const Error_Bad_Request = 400;
-const Error_Not_Found = 404;
-const Error_Internal_Server = 500;
+const errorBadRequest = 400;
+const errorNotFound = 404;
+const errorInternalServer = 500;
 
-module.exports = { Status_Ok, Status_Created, Error_Bad_Request, Error_Not_Found, Error_Internal_Server, Status_NoContent };
+module.exports = { statusOk, statusCreated, statusNoContent, errorBadRequest, errorNotFound, errorInternalServer };

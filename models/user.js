@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema({
     avatar: {
         type: String,
         required: [true, "The avatar feild is Required"],
-        vlidate: {
+        validate: {
             validator(value) {
                 return validator.isURL(value)
             },
