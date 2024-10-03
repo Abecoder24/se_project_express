@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node app.js",
     "lint": "npx eslint .",
-    "dev": "nodemon"
+    "dev": "nodemon app.js"
   },
   "author": "Abraham Tongi",
   "license": "ISC",
