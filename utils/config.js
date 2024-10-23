@@ -1,0 +1,1 @@
+exports.JWT_SECRET = "My-Secret-Key";
