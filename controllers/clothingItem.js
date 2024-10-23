@@ -1,5 +1,5 @@
 const ClothingItem = require("../models/clothingItem");
-const { statusCreated, errorBadRequest, errorNotFound, errorInternalServer } = require("../utils/statusCodes");
+const { statusCreated, errorBadRequest, errorNotFound, errorInternalServer, errorForbidden } = require("../utils/statusCodes");
 
 
 const createItem = (req, res) => {
@@ -19,27 +19,53 @@ const createItem = (req, res) => {
 const getItems = (req, res) => {
     ClothingItem.find({})
         .then(items => res.send(items))
-        .catch(err => {
-            console.log(err)
+        .catch(() => {
             res.status(errorInternalServer).send({ message: 'Invalid data' })
         })
 }
 
 const deleteItem = (req, res) => {
     const { itemId } = req.params;
+    const currentUserId = req.user._id;
 
-    ClothingItem.findByIdAndDelete(itemId)
-        .orFail()
-        .then(item => res.send({ message: "Deleted", item }))
-        .catch(err => {
-            if (err.name === "DocumentNotFoundError") {
-                return res.status(errorNotFound).send({ message: "Document not Found" });
-            }
-            if (err.name === "CastError") {
-                return res.status(errorBadRequest).send({ message: "Invalid Item ID" })
-            }
-            return res.status(errorInternalServer).send({ message: 'Invalid data' });
+    ClothingItem.findOne({
+        _id: itemId
+    }).then(item => {
+        if (!item) {
+            return res.status(errorNotFound).send("Unable to find the Item");
+        }
+        console.log(item.owner, currentUserId)
+        if (item.owner != currentUserId) {
+            return res.status(errorForbidden).send("You don't have permissons to delete this item");
+        }
+
+        return ClothingItem.deleteOne({
+            _id: itemId
         })
+            .then(() => res.send(item))
+            .catch(() => res.status(errorInternalServer).send("ubable to delete the Item"))
+    }).catch(err => {
+        if (err.name === "DocumentNotFoundError") {
+            return res.status(errorNotFound).send({ message: "Document not Found" });
+        }
+        if (err.name === "CastError") {
+            return res.status(errorBadRequest).send({ message: "Invalid Item ID" })
+        }
+        return res.status(errorInternalServer).send({ message: 'Invalid data' });
+    })
+
+    // ClothingItem.findByIdAndDelete(itemId)
+    //     .orFail()
+    //     .then(item => res.send({ message: "Deleted", item }))
+    //     .catch(err => {
+    //         if (err.name === "DocumentNotFoundError") {
+    //             return res.status(errorNotFound).send({ message: "Document not Found" });
+    //         }
+    //         if (err.name === "CastError") {
+    //             return res.status(errorBadRequest).send({ message: "Invalid Item ID" })
+    //         }
+    //         return res.status(errorInternalServer).send({ message: 'Invalid data' });
+    //     })
 }
 
 const likeClothingItem = (req, res) => {
