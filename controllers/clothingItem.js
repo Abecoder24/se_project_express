@@ -32,10 +32,14 @@ const deleteItem = (req, res) => {
         _id: itemId
     }).then(item => {
         if (!item) {
-            return res.status(errorNotFound).send("Unable to find the Item");
+            return res.status(errorNotFound).send({
+                message: "Unable to find the Item"
+            });
         }
         if ((item.owner).toString() !== currentUserId) {
-            return res.status(errorForbidden).send("You don't have permissons to delete this item");
+            return res.status(errorForbidden).send({
+                message: "You don't have permissons to delete this item"
+            });
         }
 
         return ClothingItem.deleteOne({
@@ -52,19 +56,6 @@ const deleteItem = (req, res) => {
         }
         return res.status(errorInternalServer).send({ message: 'Invalid data' });
     })
-
-    // ClothingItem.findByIdAndDelete(itemId)
-    //     .orFail()
-    //     .then(item => res.send({ message: "Deleted", item }))
-    //     .catch(err => {
-    //         if (err.name === "DocumentNotFoundError") {
-    //             return res.status(errorNotFound).send({ message: "Document not Found" });
-    //         }
-    //         if (err.name === "CastError") {
-    //             return res.status(errorBadRequest).send({ message: "Invalid Item ID" })
-    //         }
-    //         return res.status(errorInternalServer).send({ message: 'Invalid data' });
-    //     })
 }
 
 const likeClothingItem = (req, res) => {

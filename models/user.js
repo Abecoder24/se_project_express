@@ -47,7 +47,9 @@ userSchema.statics.findUserByCredentials = function findUserByCredentials(email,
             }
 
             return bcrypt.compare(password, user.password).then((matched) => {
-                if (!matched) Promise.reject(new Error('Username and Password does not match'));
+                if (!matched) {
+                    return Promise.reject(new Error('Username and Password does not match'))
+                };
                 return user;
             });
         })
