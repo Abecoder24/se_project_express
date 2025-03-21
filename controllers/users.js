@@ -2,7 +2,15 @@ const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require("../models/user");
 const { statusCreated, errorBadRequest, errorNotFound, errorInternalServer, errorDuplicate, errorUnauthorized } = require("../utils/statusCodes");
-const { JWT_SECRET } = require('../utils/config');
+//Getting the Key from a config.js file //its readable by anyone
+// const { JWT_SECRET } = require('../utils/config');
+//Getting the same secret key from an ENV file
+require('dotenv').config()
+
+
+const {JWT_SECRET = "key-from-default-value"} = process.env
+
+console.log(JWT_SECRET, "this is the secret key that we are getting from the ENV")
 
 const getCurrentUser = (req, res) => {
     User.findOne({ _id: req.user._id }).orFail()
