@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require("../models/user");
 const { statusCreated, errorBadRequest, errorNotFound, errorInternalServer, errorDuplicate, errorUnauthorized } = require("../utils/statusCodes");
 require('dotenv').config()
-const {JWT_SECRET = "key-from-default-value"} = process.env
+const { JWT_SECRET = "super-strong-secret" } = process.env
 
 
 const getCurrentUser = (req, res) => {
