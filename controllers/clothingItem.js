@@ -1,8 +1,8 @@
 const ClothingItem = require("../models/clothingItem");
 const { statusCreated, errorBadRequest, errorNotFound, errorInternalServer, errorForbidden } = require("../utils/statusCodes");
+const handleErrors = require('../errors/error')
 
-
-const createItem = (req, res) => {
+const createItem = (req, res, next) => {
     const { name, weather, imageUrl } = req.body;
     const owner = req.user._id;
     ClothingItem.create({ name, weather, imageUrl, owner })
@@ -10,56 +10,51 @@ const createItem = (req, res) => {
             res.status(statusCreated).send({ data: item });
         }).catch(err => {
             if (err.name === "ValidationError") {
-                return res.status(errorBadRequest).send({ message: err.message })
+                next(new handleErrors(err.message, errorBadRequest));
             }
-            return res.status(errorInternalServer).send({ message: 'Invalid data' });
+            next(err)
         })
 }
 
-const getItems = (req, res) => {
+const getItems = (req, res, next) => {
     ClothingItem.find({})
         .then(items => res.send(items))
         .catch(() => {
-            res.status(errorInternalServer).send({ message: 'Invalid data' })
+            next(new handleErrors('Invalid Data', errorInternalServer))
         })
 }
 
-const deleteItem = (req, res) => {
+const deleteItem = (req, res, next) => {
     const { itemId } = req.params;
-    console.log(req.user)
     const currentUserId = req.user._id;
 
     ClothingItem.findOne({
         _id: itemId
     }).then(item => {
         if (!item) {
-            return res.status(errorNotFound).send({
-                message: "Unable to find the Item"
-            });
+            throw new handleErrors('Unable to find the Item', errorNotFound);
         }
         if ((item.owner).toString() !== currentUserId) {
-            return res.status(errorForbidden).send({
-                message: "You don't have permissons to delete this item"
-            });
+            throw new handleErrors("You don't have permissons to delete this item", errorForbidden);
         }
 
         return ClothingItem.deleteOne({
             _id: itemId
         })
             .then(() => res.send(item))
-            .catch(() => res.status(errorInternalServer).send("ubable to delete the Item"))
+            .catch((err) => next(err))
     }).catch(err => {
         if (err.name === "DocumentNotFoundError") {
-            return res.status(errorNotFound).send({ message: "Document not Found" });
+            next(new handleErrors("Document not Found", errorNotFound));
         }
         if (err.name === "CastError") {
-            return res.status(errorBadRequest).send({ message: "Invalid Item ID" })
+            next(new handleErrors("Invalid Item ID", errorBadRequest))
         }
-        return res.status(errorInternalServer).send({ message: 'Invalid data' });
+        next(err);
     })
 }
 
-const likeClothingItem = (req, res) => {
+const likeClothingItem = (req, res, next) => {
     const { itemId } = req.params;
     const { _id } = req.user;
 
@@ -77,16 +72,16 @@ const likeClothingItem = (req, res) => {
         }))
         .catch((err) => {
             if (err.name === "DocumentNotFoundError") {
-                return res.status(errorNotFound).send({ message: "Document not Found" });
+                next(new handleErrors("Document not found", errorNotFound));
             }
             if (err.name === "CastError") {
-                return res.status(errorBadRequest).send({ message: "Invalid Item ID" })
+                next(new handleErrors("Invalid Item Id", errorBadRequest));
             }
-            return res.status(errorInternalServer).send({ message: 'Invalid data' });
+            next(new handleErrors('Invalid Data', errorInternalServer));
         })
 }
 
-const dislikeClothingItem = (req, res) => {
+const dislikeClothingItem = (req, res, next) => {
     const { itemId } = req.params;
     const { _id } = req.user;
 
@@ -104,12 +99,12 @@ const dislikeClothingItem = (req, res) => {
         }))
         .catch((err) => {
             if (err.name === "DocumentNotFoundError") {
-                return res.status(errorNotFound).send({ message: "Document not Found" });
+                next(new handleErrors('Document not found', 404));
             }
             if (err.name === "CastError") {
-                return res.status(errorBadRequest).send({ message: "Invalid Item ID" })
+                next(new handleErrors("Invalid Item Id", errorBadRequest));
             }
-            return res.status(errorInternalServer).send({ message: 'Invalid data' });
+            next(new handleErrors("Invalid Data", errorInternalServer));
         })
 }
 module.exports = {
