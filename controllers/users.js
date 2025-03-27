@@ -4,7 +4,7 @@ const User = require("../models/user");
 const { statusCreated, errorBadRequest, errorNotFound, errorInternalServer, errorDuplicate, errorUnauthorized } = require("../utils/statusCodes");
 require('dotenv').config()
 const { JWT_SECRET = "super-strong-secret" } = process.env
-const {handleErrors} = require('../errors/error');
+const handleErrors = require('../errors/error');
 
 
 const getCurrentUser = (req, res, next) => {
@@ -91,7 +91,7 @@ const login = (req, res, next) => {
         })
         .catch(err => {
             if (err.message === "Incorrect email or password" || err.message === "Username and Password does not match") {
-                next(err.message, errorUnauthorized);
+                next(new handleErrors(err.message, errorUnauthorized));
             }
             next(err)
         })

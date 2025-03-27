@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "lint": "npx eslint .",
+    "lint": "eslint",
     "dev": "nodemon app.js"
   },
   "author": "Abraham Tongi",
@@ -23,10 +23,12 @@
     "winston": "^3.17.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.23.0",
     "eslint": "^8.57.1",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^8.10.0",
     "eslint-plugin-import": "^2.30.0",
+    "globals": "^16.0.0",
     "nodemon": "^3.1.5",
     "prettier": "^2.8.8"
   }

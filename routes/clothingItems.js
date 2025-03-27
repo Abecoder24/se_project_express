@@ -10,7 +10,7 @@ router.get("/", getItems);
 router.post("/", auth, celebrate({
     body: Joi.object().keys({
         name: Joi.string().required().min(2).max(30),
-        weather: Joi.string().required(),
+        weather: Joi.string().required().valid('hot', 'warm', 'cold'),
         imageUrl: Joi.string().required().uri()
     })
 }), createItem);
@@ -19,21 +19,21 @@ router.post("/", auth, celebrate({
 router.delete("/:itemId", auth, celebrate({
     params: Joi.object().keys({
         itemId: Joi.string().alphanum().length(24),
-    }).unknown(true),
+    }),
 }), deleteItem);
 
 // Ad Like
 router.put("/:itemId/likes", auth, celebrate({
     params: Joi.object().keys({
         itemId: Joi.string().alphanum().length(24),
-    }).unknown(true),
+    }),
 }), likeClothingItem);
 
 // Dislike
 router.delete("/:itemId/likes", auth, celebrate({
     params: Joi.object().keys({
         itemId: Joi.string().alphanum().length(24),
-    }).unknown(true),
+    }),
 }), dislikeClothingItem);
 
 
