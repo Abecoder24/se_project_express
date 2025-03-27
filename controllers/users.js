@@ -2,9 +2,11 @@ const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require("../models/user");
 const { statusCreated, errorBadRequest, errorNotFound, errorInternalServer, errorDuplicate, errorUnauthorized } = require("../utils/statusCodes");
-require('dotenv').config()
-const { JWT_SECRET = "super-strong-secret" } = process.env
-const handleErrors = require('../errors/error');
+const HandleErrors = require('../errors/error');
+
+require('dotenv').config();
+
+const { JWT_SECRET = "super-strong-secret" } = process.env;
 
 
 const getCurrentUser = (req, res, next) => {
@@ -12,12 +14,12 @@ const getCurrentUser = (req, res, next) => {
         .then(user => res.send(user))
         .catch(err => {
             if (err.name === "DocumentNotFoundError") {
-                next(new handleErrors("User not Found", errorNotFound))
+                next(new HandleErrors("User not Found", errorNotFound))
             }
             if (err.name === "CastError") {
-                next(new handleErrors("Invalid user Id", errorBadRequest));
+                next(new HandleErrors("Invalid user Id", errorBadRequest));
             }
-            next(new handleErrors("Unable to handle the request", errorInternalServer));
+            next(new HandleErrors("Unable to handle the request", errorInternalServer));
         })
 }
 
@@ -38,10 +40,10 @@ const updateCurrentUser = (req, res, next) => {
         .then(user => res.status(statusCreated).send(user))
         .catch(err => {
             if (err.name === "ValidationError") {
-                next(new handleErrors(err.message, errorBadRequest));
+                next(new HandleErrors(err.message, errorBadRequest));
             }
             if (err.name === "DocumentNotFoundError") {
-                next(new handleErrors("User not Found", errorNotFound));
+                next(new HandleErrors("User not Found", errorNotFound));
             }
             next('An error has occurred on the server', errorInternalServer);
         })
@@ -65,12 +67,12 @@ const createUser = (req, res, next) => {
             }))
             .catch(err => {
                 if (err.name === "ValidationError") {
-                    next(new handleErrors(err.message, errorBadRequest));
+                    next(new HandleErrors(err.message, errorBadRequest));
                 }
                 if (err.code === 11000) {
-                    next(new handleErrors("Email address already exists", errorDuplicate));
+                    next(new HandleErrors("Email address already exists", errorDuplicate));
                 }
-                next(new handleErrors('An error has occurred on the server', errorInternalServer));
+                next(new HandleErrors('An error has occurred on the server', errorInternalServer));
             }))
 
 }
@@ -79,7 +81,7 @@ const login = (req, res, next) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-        throw new handleErrors("The password and email fields are required", errorBadRequest);
+        throw new HandleErrors("The password and email fields are required", errorBadRequest);
     }
 
     return User.findUserByCredentials(email, password)
@@ -91,7 +93,7 @@ const login = (req, res, next) => {
         })
         .catch(err => {
             if (err.message === "Incorrect email or password" || err.message === "Username and Password does not match") {
-                next(new handleErrors(err.message, errorUnauthorized));
+                next(new HandleErrors(err.message, errorUnauthorized));
             }
             next(err)
         })
@@ -104,12 +106,12 @@ const getUserById = (req, res, next) => {
         .then(user => res.send(user))
         .catch(err => {
             if (err.name === "DocumentNotFoundError") {
-                next(new handleErrors("User not Found", errorNotFound));
+                next(new HandleErrors("User not Found", errorNotFound));
             }
             if (err.name === "CastError") {
-                next(new handleErrors("Invalid User ID", errorBadRequest));
+                next(new HandleErrors("Invalid User ID", errorBadRequest));
             }
-            next(new handleErrors("Invalid data", errorInternalServer));
+            next(new HandleErrors("Invalid data", errorInternalServer));
         })
 }
 

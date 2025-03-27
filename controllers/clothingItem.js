@@ -1,6 +1,6 @@
 const ClothingItem = require("../models/clothingItem");
 const { statusCreated, errorBadRequest, errorNotFound, errorInternalServer, errorForbidden } = require("../utils/statusCodes");
-const handleErrors = require('../errors/error')
+const HandleErrors = require('../errors/error')
 
 const createItem = (req, res, next) => {
     const { name, weather, imageUrl } = req.body;
@@ -10,7 +10,7 @@ const createItem = (req, res, next) => {
             res.status(statusCreated).send({ data: item });
         }).catch(err => {
             if (err.name === "ValidationError") {
-                next(new handleErrors(err.message, errorBadRequest));
+                next(new HandleErrors(err.message, errorBadRequest));
             }
             next(err)
         })
@@ -20,7 +20,7 @@ const getItems = (req, res, next) => {
     ClothingItem.find({})
         .then(items => res.send(items))
         .catch(() => {
-            next(new handleErrors('Invalid Data', errorInternalServer))
+            next(new HandleErrors('Invalid Data', errorInternalServer))
         })
 }
 
@@ -32,10 +32,10 @@ const deleteItem = (req, res, next) => {
         _id: itemId
     }).then(item => {
         if (!item) {
-            throw new handleErrors('Unable to find the Item', errorNotFound);
+            throw new HandleErrors('Unable to find the Item', errorNotFound);
         }
         if ((item.owner).toString() !== currentUserId) {
-            throw new handleErrors("You don't have permissons to delete this item", errorForbidden);
+            throw new HandleErrors("You don't have permissons to delete this item", errorForbidden);
         }
 
         return ClothingItem.deleteOne({
@@ -45,10 +45,10 @@ const deleteItem = (req, res, next) => {
             .catch((err) => next(err))
     }).catch(err => {
         if (err.name === "DocumentNotFoundError") {
-            next(new handleErrors("Document not Found", errorNotFound));
+            next(new HandleErrors("Document not Found", errorNotFound));
         }
         if (err.name === "CastError") {
-            next(new handleErrors("Invalid Item ID", errorBadRequest))
+            next(new HandleErrors("Invalid Item ID", errorBadRequest))
         }
         next(err);
     })
@@ -72,12 +72,12 @@ const likeClothingItem = (req, res, next) => {
         }))
         .catch((err) => {
             if (err.name === "DocumentNotFoundError") {
-                next(new handleErrors("Document not found", errorNotFound));
+                next(new HandleErrors("Document not found", errorNotFound));
             }
             if (err.name === "CastError") {
-                next(new handleErrors("Invalid Item Id", errorBadRequest));
+                next(new HandleErrors("Invalid Item Id", errorBadRequest));
             }
-            next(new handleErrors('Invalid Data', errorInternalServer));
+            next(new HandleErrors('Invalid Data', errorInternalServer));
         })
 }
 
@@ -99,12 +99,12 @@ const dislikeClothingItem = (req, res, next) => {
         }))
         .catch((err) => {
             if (err.name === "DocumentNotFoundError") {
-                next(new handleErrors('Document not found', 404));
+                next(new HandleErrors('Document not found', 404));
             }
             if (err.name === "CastError") {
-                next(new handleErrors("Invalid Item Id", errorBadRequest));
+                next(new HandleErrors("Invalid Item Id", errorBadRequest));
             }
-            next(new handleErrors("Invalid Data", errorInternalServer));
+            next(new HandleErrors("Invalid Data", errorInternalServer));
         })
 }
 module.exports = {

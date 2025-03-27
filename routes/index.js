@@ -1,15 +1,15 @@
 const router = require("express").Router();
-const userRouter = require("./users");
+const { celebrate, Joi } = require('celebrate');
 const itemRouter = require("./clothingItems");
 const { errorNotFound } = require("../utils/statusCodes");
 const { login, createUser } = require("../controllers/users");
-const { celebrate, Joi } = require('celebrate');
-const handleErrors = require('../errors/error');
+const userRouter = require("./users");
+const HandleErrors = require('../errors/error');
 
 router.use("/users", userRouter);
 router.use("/items", itemRouter);
 
-//testing server crash
+// testing server crash
 router.get('/crash-test', () => {
     setTimeout(() => {
         throw new Error('Server will crash now');
@@ -35,7 +35,7 @@ router.post("/signup", celebrate({
 }), createUser);
 
 router.use((req, res, next) => {
-    next(new handleErrors("Router not found", errorNotFound))
+    next(new HandleErrors("Router not found", errorNotFound))
 })
 
 module.exports = router;

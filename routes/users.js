@@ -1,7 +1,7 @@
 const router = require('express').Router();
+const { celebrate, Joi } = require('celebrate');
 const { getCurrentUser, updateCurrentUser } = require("../controllers/users");
 const auth = require('../middleware/auth');
-const {celebrate, Joi} = require('celebrate');
 
 // get current logged in user
 router.get('/me', auth, getCurrentUser);
@@ -11,5 +11,5 @@ router.patch('/me', auth, celebrate({
         name: Joi.string().required().min(2).max(30),
         avatar: Joi.string().required().uri()
     })
-}),updateCurrentUser);
+}), updateCurrentUser);
 module.exports = router;

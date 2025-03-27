@@ -1,7 +1,7 @@
 const router = require("express").Router();
-const { createItem, getItems, deleteItem, likeClothingItem, dislikeClothingItem } = require("../controllers/clothingItem");
+const { celebrate, Joi } = require('celebrate');
 const auth = require("../middleware/auth");
-const {celebrate, Joi} = require('celebrate');
+const { createItem, getItems, deleteItem, likeClothingItem, dislikeClothingItem } = require("../controllers/clothingItem");
 
 // read
 router.get("/", getItems);
